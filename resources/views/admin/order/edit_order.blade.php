@@ -1,0 +1,114 @@
+<x-app-layout>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-12">
+                <div class="p-6 text-gray-900">
+                    <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-2xl">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Edit Order</h2>
+                    <form action="{{ route('orders.update', $order->id) }}" method="post">
+                        @csrf
+                        @method('PUT')
+
+                       
+
+                        <!-- Customer Name -->
+                        <div class="mb-4">
+                            <label for="customer_name" class="block text-sm font-medium text-gray-700">Customer Name</label>
+                            <input type="text" name="customer_name" id="customer_name"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                value="{{ $order->customer_name }}" required>
+                        </div>
+
+                        <!-- Customer Phone -->
+                        <div class="mb-4">
+                            <label for="customer_phone" class="block text-sm font-medium text-gray-700">Customer Phone</label>
+                            <input type="text" name="customer_phone" id="customer_phone"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                value="{{ $order->customer_phone }}" required>
+                        </div>
+
+                        <!-- Customer Address -->
+                        <div class="mb-4">
+                            <label for="customer_address" class="block text-sm font-medium text-gray-700">Customer Address</label>
+                            <input type="text" name="customer_address" id="customer_address"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                value="{{ $order->customer_address }}" required>
+                        </div>
+
+                        <!-- Ordered Date -->
+                        <div class="mb-4">
+                            <label for="ordered_date" class="block text-sm font-medium text-gray-700">Ordered Date</label>
+                            <input type="date" name="ordered_date" id="ordered_date"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                value="{{ $order->ordered_date }}" required>
+                        </div>
+
+                        <!-- Estimate Delivery Date -->
+                        <div class="mb-4">
+                            <label for="estimate_delivery_date" class="block text-sm font-medium text-gray-700">Estimate Delivery Date</label>
+                            <input type="date" name="estimate_delivery_date" id="estimate_delivery_date"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                value="{{ $order->estimate_delivery_date }}" required>
+                        </div>
+
+                        <!-- Process Steps -->
+                         <div class="mb-4">
+                            <label for="process_steps" class="block text-sm font-medium text-gray-700">Process Steps</label>
+                            <select name="process_steps[]" id="process_steps"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                multiple required>
+                                {{-- @foreach($processes as $process)
+                                    <option value="{{ $process->id }}" {{ in_array($process->id, $order->orderProcesses->pluck('process_id')->toArray()) ? 'selected' : '' }}>
+                                        {{ $process->name }}
+                                    </option>
+                                @endforeach --}}
+                                @foreach($processes as $process)
+                                    <option value="{{ $process->id }}" {{ in_array($process->id, $order->processes->pluck('process_id')->toArray()) ? 'selected' : '' }}>
+                                        {{ $process->name }}
+                                    </option>
+                                @endforeach
+                                </select>
+                        </div> 
+
+                        <!-- Employee IDs -->
+                        {{-- <div class="mb-4">
+                            <label for="employee_ids" class="block text-sm font-medium text-gray-700">Assign Employees</label>
+                            <select name="employee_ids[]" id="employee_ids"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
+                                multiple required>
+                                @foreach($employees as $employee)
+                                    <option value="{{ $employee->id }}" {{ in_array($employee->id, $order->orderProcesses->pluck('employee_id')->toArray()) ? 'selected' : '' }}>
+                                        {{ $employee->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div> --}}
+
+                        {{-- <div class="flex justify-between">
+                            <a href="{{ route('orders.index') }}"
+                                class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Back
+                            </a>
+                            <button type="submit"
+                                class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Update Order
+                            </button>
+                        </div> --}}
+                        <div class="flex space-x-4">
+                            <button type="submit"
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold p-2 rounded">
+                                Update
+                            </button>
+                            <a href="{{ route('orders.index') }}">
+                                <button type="button"
+                                    class="bg-violet-500 hover:bg-violet-600 text-white font-bold py-2 px-4 rounded">
+                                    Go Back
+                                </button>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
