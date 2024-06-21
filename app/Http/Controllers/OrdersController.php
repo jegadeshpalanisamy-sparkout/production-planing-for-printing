@@ -22,7 +22,7 @@ class OrdersController extends Controller
         //
         $orders = Order::with('processes')->get();
 
-        return view('admin.order.order_list',compact('orders'));
+        return view('admin.order.order_list', compact('orders'));
     }
 
     /**
@@ -33,8 +33,8 @@ class OrdersController extends Controller
     public function create()
     {
         //
-        $processes=Process::all();
-        return view('admin.order.add_order',compact('processes'));
+        $processes = Process::all();
+        return view('admin.order.add_order', compact('processes'));
     }
 
     /**
@@ -45,27 +45,36 @@ class OrdersController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        try{           
-            $order = Order::create($request->only(
-                'order_number', 'customer_name', 'customer_phone', 'customer_address', 'ordered_date', 'estimate_delivery_date', 'process_steps'
-            ));
+        try {
+            $processStepsOrder = json_decode($request->process_steps_order, true);
 
-            foreach ($request->process_steps as $process_id) {
+            $order = Order::create([
+                'order_number'=>$request->order_number,
+                'customer_name'=>$request->customer_name,
+                'customer_phone'=>$request->customer_phone,
+                'customer_address'=>$request->customer_address,
+                'ordered_date'=>$request->ordered_date,
+                'estimate_delivery_date'=>$request->estimate_delivery_date,
+                'process_steps'=>$processStepsOrder
+            ]);
+            
+            //    foreach ($request->process_steps_order as $process_id) {
+            //     $order->processes()->create(['process_id' => $process_id]);
+            // }
+
+            foreach ($processStepsOrder as $process_id) {
                 $order->processes()->create(['process_id' => $process_id]);
             }
+           
 
             return redirect()->route('orders.index')->with('success', 'Order created successfully.');
-          }
-        catch(\Exception $e)
-        {
-            Log::error('Failed to create order: '>__METHOD__. $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Failed to create order: ' > __METHOD__ . $e->getMessage());
 
             return redirect()->back()->withInput()->with('error', 'Failed to create order: ' . $e->getMessage());
-
         }
-
-}
-/**
+    }
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -89,9 +98,12 @@ class OrdersController extends Controller
         $order = Order::with('processes')->findOrFail($id); // Fetch a single order by ID
 
         // dd($order);
-        $processes=Process::all();
+        $processes = Process::all();
 
-        return view('admin.order.edit_order', compact('order','processes'));
+        $selectedProcesses = $order->processes()->pluck('process_id')->toArray();
+
+        return view('admin.order.edit_order', compact('order', 'processes', 'selectedProcesses'));
+
     }
 
     /**
@@ -103,49 +115,38 @@ class OrdersController extends Controller
      */
     public function update(StoreOrderRequest $request, $id)
     {
-        //
-
-        // try{   
-        //     $getOrder=Order::findorFail($id);
-        //     $order = Order::create($request->only(
-        //         'order_number', 'customer_name', 'customer_phone', 'customer_address', 'ordered_date', 'estimate_delivery_date', 'process_steps'
-        //     ));
-
-        //     foreach ($request->process_steps as $process_id) {
-        //         $order->processes()->create(['process_id' => $process_id]);
-        //     }
-
-        //     return redirect()->route('orders.index')->with('success', 'Order created successfully.');
-        //   }
-        // catch(\Exception $e)
-        // {
-        //     Log::error('Failed to create order: '>__METHOD__. $e->getMessage());
-
-        //     return redirect()->back()->withInput()->with('error', 'Failed to create order: ' . $e->getMessage());
-
-        // }
-
         try {
             // Find the existing order by ID
             $order = Order::findOrFail($id);
-    
-            $order->orderProcesses()->delete();
 
-        foreach ($request->process_steps as $key => $process_id) {
-            $order->orderProcesses()->create([
-                'process_id' => $process_id,
-               
-            ]);
+
+        // Decode the process steps order
+        $processStepsOrder = json_decode($request->process_steps_order, true);
+
+             // Update the order fields
+        $order->update([
+            'customer_name' => $request->customer_name,
+            'customer_phone' => $request->customer_phone,
+            'customer_address' => $request->customer_address,
+            'ordered_date' => $request->ordered_date,
+            'estimate_delivery_date' => $request->estimate_delivery_date,
+            'process_steps' => $processStepsOrder
+        ]);
+
+            // Detach old processes
+            $order->processes()->delete();
+
+            // Attach new processes
+            foreach ($processStepsOrder as $process_id) {
+                $order->processes()->create(['process_id' => $process_id]);
+            }
+
             return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
-
-        }
-    
         } catch (\Exception $e) {
-            Log::error('Failed to update order: ' . __METHOD__. $e->getMessage());
-    
+            Log::error('Failed to update order: ' . __METHOD__ . ' - ' . $e->getMessage());
+
             return redirect()->back()->withInput()->with('error', 'Failed to update order: ' . $e->getMessage());
         }
-
     }
 
     /**
@@ -156,6 +157,24 @@ class OrdersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            // Find the existing order by ID
+            $order = Order::findOrFail($id);
+
+            // Delete associated processes
+            $order->processes()->delete();
+
+            // Delete the order itself
+            $order->delete();
+
+            return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to delete order: ' . __METHOD__ . ' - ' . $e->getMessage());
+
+            return redirect()->route('orders.index')->with('error', 'Failed to delete order: ' . $e->getMessage());
+        }
     }
+
+
+
 }

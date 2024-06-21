@@ -5,24 +5,16 @@
                 <div class="p-6 text-gray-900">
                     <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-6 text-gray-800">Create Order</h2>
-                        
-                        <form action="{{ route('orders.store') }}" method="post">
+
+                        <form action="{{ route('orders.store') }}" method="post" id="orderForm">
                             @csrf
-                            
-                            <!-- Order Number -->
-                            {{-- <div class="mb-4">
-                                <label for="order_number" class="block text-gray-700 text-sm font-bold mb-2">Order Number</label>
-                                <input type="text" id="order_number" name="order_number" placeholder="Enter order number" 
-                                    class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
-                            </div>
-                            @error('order_number')
-                                <div class="text-red-500">{{ $message }}</div>
-                            @enderror --}}
 
                             <!-- Customer Name -->
                             <div class="mb-4">
-                                <label for="customer_name" class="block text-gray-700 text-sm font-bold mb-2">Customer Name</label>
-                                <input type="text" id="customer_name" name="customer_name" placeholder="Enter customer name" 
+                                <label for="customer_name" class="block text-gray-700 text-sm font-bold mb-2">Customer
+                                    Name</label>
+                                <input type="text" id="customer_name" name="customer_name"
+                                    placeholder="Enter customer name"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('customer_name')
@@ -31,8 +23,10 @@
 
                             <!-- Customer Phone -->
                             <div class="mb-4">
-                                <label for="customer_phone" class="block text-gray-700 text-sm font-bold mb-2">Customer Phone</label>
-                                <input type="text" id="customer_phone" name="customer_phone" placeholder="Enter customer phone" 
+                                <label for="customer_phone" class="block text-gray-700 text-sm font-bold mb-2">Customer
+                                    Phone</label>
+                                <input type="text" id="customer_phone" name="customer_phone"
+                                    placeholder="Enter customer phone"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('customer_phone')
@@ -41,8 +35,10 @@
 
                             <!-- Customer Address -->
                             <div class="mb-4">
-                                <label for="customer_address" class="block text-gray-700 text-sm font-bold mb-2">Customer Address</label>
-                                <input type="text" id="customer_address" name="customer_address" placeholder="Enter customer address" 
+                                <label for="customer_address"
+                                    class="block text-gray-700 text-sm font-bold mb-2">Customer Address</label>
+                                <input type="text" id="customer_address" name="customer_address"
+                                    placeholder="Enter customer address"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('customer_address')
@@ -51,8 +47,9 @@
 
                             <!-- Ordered Date -->
                             <div class="mb-4">
-                                <label for="ordered_date" class="block text-gray-700 text-sm font-bold mb-2">Ordered Date</label>
-                                <input type="date" id="ordered_date" name="ordered_date" 
+                                <label for="ordered_date" class="block text-gray-700 text-sm font-bold mb-2">Ordered
+                                    Date</label>
+                                <input type="date" id="ordered_date" name="ordered_date"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('ordered_date')
@@ -61,8 +58,9 @@
 
                             <!-- Estimate Delivery Date -->
                             <div class="mb-4">
-                                <label for="estimate_delivery_date" class="block text-gray-700 text-sm font-bold mb-2">Estimate Delivery Date</label>
-                                <input type="date" id="estimate_delivery_date" name="estimate_delivery_date" 
+                                <label for="estimate_delivery_date"
+                                    class="block text-gray-700 text-sm font-bold mb-2">Estimate Delivery Date</label>
+                                <input type="date" id="estimate_delivery_date" name="estimate_delivery_date"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('estimate_delivery_date')
@@ -71,16 +69,24 @@
 
                             <!-- Process Steps -->
                             <div class="mb-4">
-                                <label for="process_steps" class="block text-gray-700 text-sm font-bold mb-2">Process Steps</label>
-                                <select name="process_steps[]" id="process_steps" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" multiple required>
-                                    @foreach($processes as $process)
-                                        <option value="{{ $process->id }}">{{ $process->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Process Steps</label>
+                                @foreach ($processes as $process)
+                                    <div class="mb-2">
+                                        <input type="checkbox" name="process_steps[]"
+                                            id="process_step_{{ $process->id }}" class="addcheck"
+                                            value="{{ $process->id }}"
+                                            class="shadow border rounded py-2 px-3 text-gray-700 leading-tight">
+                                        <label for="process_step_{{ $process->id }}"
+                                            class="ml-2">{{ $process->name }}</label>
+                                    </div>
+                                @endforeach
                             </div>
                             @error('process_steps')
                                 <div class="text-red-500">{{ $message }}</div>
                             @enderror
+
+                            <!-- Hidden Input to Store Selection Order -->
+                            <input type="hidden" name="process_steps_order" id="process_steps_order">
 
                             <div class="flex space-x-4">
                                 <button type="submit"
@@ -100,4 +106,33 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            var selectedProcessSteps = [];
+            $('.addcheck').change(function() {
+
+                let temp = [];
+                // Loop through all checked checkboxes
+                $('.addcheck:checked').each(function() {
+                    temp.push($(this).val());
+                    if (!selectedProcessSteps.includes($(this).val())) {
+                        selectedProcessSteps.push($(this).val());
+                    }
+                });
+
+                for (let i = selectedProcessSteps.length - 1; i >= 0; i--) {
+                    if (!temp.includes(selectedProcessSteps[i])) {
+                        selectedProcessSteps = selectedProcessSteps.filter((a) => a != selectedProcessSteps[i]);
+                    }
+                }
+                // console.log(selectedProcessSteps)
+
+                // Update hidden input value with JSON-encoded array
+                $('#process_steps_order').val(JSON.stringify(selectedProcessSteps));
+                
+                console.log($('#process_steps_order').val()); // Check hidden input value
+            });
+        });
+    </script>
+
 </x-app-layout>

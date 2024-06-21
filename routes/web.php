@@ -67,9 +67,19 @@ Route::middleware('process')->group(function(){
         //admin to update employee
         Route::delete('/delete-employee/{id}',[AdminController::class,'deleteEmployee'])->name('admin.delete_employee');
 
+
+    //admin Assign orders to employee
+        Route::get('/assign-order',[AdminController::class,'assignOrder'])->name('admin.assign_order');
+
+
+
         //resource controller for orders crud
 
         Route::resource('orders',OrdersController::class);
+
+
+        //ajax request to get processes
+        Route::get('/get-processes/{id}',[AdminController::class,'getProcessesByOrderId']);
 
 });
 

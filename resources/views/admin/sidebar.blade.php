@@ -25,6 +25,17 @@
             
         </a>
     </li>
+
+    <li class="nav-item menu-items">
+        <a class="nav-link bg-violet-500 rounded-md " href="{{ route('admin.assign_order') }}">
+            <button class="bg-violet-500 text-white px-4  rounded-md w-100 hover:bg-violet-600">
+                Assign Order
+            </button>
+            
+        </a>
+    </li>
     </ul>
 </nav>
+
+
 

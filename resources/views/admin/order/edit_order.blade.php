@@ -52,23 +52,21 @@
                         </div>
 
                         <!-- Process Steps -->
-                         <div class="mb-4">
-                            <label for="process_steps" class="block text-sm font-medium text-gray-700">Process Steps</label>
-                            <select name="process_steps[]" id="process_steps"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm "
-                                multiple required>
-                                {{-- @foreach($processes as $process)
-                                    <option value="{{ $process->id }}" {{ in_array($process->id, $order->orderProcesses->pluck('process_id')->toArray()) ? 'selected' : '' }}>
-                                        {{ $process->name }}
-                                    </option>
-                                @endforeach --}}
-                                @foreach($processes as $process)
-                                    <option value="{{ $process->id }}" {{ in_array($process->id, $order->processes->pluck('process_id')->toArray()) ? 'selected' : '' }}>
-                                        {{ $process->name }}
-                                    </option>
-                                @endforeach
-                                </select>
-                        </div> 
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Process Steps</label>
+                            @foreach($processes as $process)
+                                <div class="flex items-center mt-2">
+                                    <input type="checkbox" name="process_steps[]" id="process_step_{{ $process->id }}" value="{{ $process->id }}" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded addcheck" {{ in_array($process->id, $selectedProcesses) ? 'checked' : '' }}>
+                                    <label for="process_step_{{ $process->id }}" class="ml-2 text-sm text-gray-600">{{ $process->name }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        
+                            <!-- Hidden Input to Store Selection Order -->
+                            <input type="hidden" name="process_steps_order" id="process_steps_order">
+                        
+                        
 
                         <!-- Employee IDs -->
                         {{-- <div class="mb-4">
@@ -111,4 +109,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            var selectedProcessSteps = [];
+            $('.addcheck').change(function() {
+
+                let temp = [];
+                // Loop through all checked checkboxes
+                $('.addcheck:checked').each(function() {
+                    temp.push($(this).val());
+                    if (!selectedProcessSteps.includes($(this).val())) {
+                        selectedProcessSteps.push($(this).val());
+                    }
+                });
+
+                for (let i = selectedProcessSteps.length - 1; i >= 0; i--) {
+                    if (!temp.includes(selectedProcessSteps[i])) {
+                        selectedProcessSteps = selectedProcessSteps.filter((a) => a != selectedProcessSteps[i]);
+                    }
+                }
+                // console.log(selectedProcessSteps)
+
+                // Update hidden input value with JSON-encoded array
+                $('#process_steps_order').val(JSON.stringify(selectedProcessSteps));
+                
+                console.log($('#process_steps_order').val()); // Check hidden input value
+            });
+        });
+    </script>
 </x-app-layout>

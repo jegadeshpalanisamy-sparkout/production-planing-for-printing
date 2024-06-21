@@ -63,7 +63,7 @@
                                         Edit
                                     </button>
                                 </a>
-                                    <form action="" method="POST" class="inline-block">
+                                    <form action="{{ route('orders.destroy',$order->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">Delete</button>

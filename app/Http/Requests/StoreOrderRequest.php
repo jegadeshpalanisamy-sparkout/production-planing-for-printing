@@ -30,7 +30,7 @@ class StoreOrderRequest extends FormRequest
             'customer_address' => 'required|string|max:255',
             'ordered_date' => 'required|date',
             'estimate_delivery_date' => 'required|date',
-            'process_steps' => 'required|array',
+            'process_steps_order' => 'required|string',
         ];
     }
     public function messages()
@@ -54,8 +54,8 @@ class StoreOrderRequest extends FormRequest
             'estimate_delivery_date.required' => 'Estimate delivery date is required.',
             'estimate_delivery_date.date' => 'Estimate delivery date must be a valid date.',
 
-            'process_steps.required' => 'Process steps are required.',
-            'process_steps.array' => 'Process steps must be selected from the list.',
+            'process_steps_order.required' => 'Process steps are required.',
+            'process_steps_order.array' => 'Process steps must be selected from the list.',
         ];
     }
 }
