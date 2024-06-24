@@ -17,14 +17,26 @@ use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+    /**
+     * Display a listing of all processes.
+     *
+     * This method retrieves all processes from the database
+     * to the view, allowing it to be accessed within the view file.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $processes = Process::all();
 
         return view('admin.home')->with('processes', $processes);
     }
-    //redirect to Add process form
 
+    /**
+     * Display the form to add a new process.
+     *
+     * @return \Illuminate\View\View
+     */
     public function addProcess()
     {
         return view('admin.process.add_process');
@@ -99,11 +111,13 @@ class AdminController extends Controller
     }
 
 
-    //employees details
     /**
-     * Displays a list of employees.
+     * Display a list of employees.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View The view displaying the list of employees.
+     * Retrieves users with the role 'employee' from the database
+     * and renders a view to display them.
+     *
+     * @return \Illuminate\View\View
      */
     public function showEmployees()
     {
@@ -111,7 +125,15 @@ class AdminController extends Controller
         // dd($employees);
         return view('admin.employees.employee_list', compact('employees'));
     }
-
+    /**
+     * Display the form to edit an employee.
+     *
+     * Retrieves the employee details from the database based on the given ID,
+     * and renders a view to edit those details.
+     *
+     * @param  int  $id The ID of the employee to edit
+     * @return \Illuminate\View\View
+     */
     public function editEmployee($id)
     {
 
@@ -199,8 +221,13 @@ class AdminController extends Controller
         }
     }
 
-
-
+    //list of assign order
+    public function assignList()
+    {
+        $getAssignOrders = OrderProcess::whereNotNull('employee_id')->get();
+        return view('admin.order.assign_order_list', compact('getAssignOrders'));
+    }
+    //form for assign order
     public function assignOrder()
     {
 
@@ -214,13 +241,44 @@ class AdminController extends Controller
     public function getProcessesByOrderId($id)
     {
         $processes = OrderProcess::with('process')->where('order_id', $id)->where('start_time', null)->limit(1)->get();
-        
+
         // Check if processes are found
         // if ($processes->isEmpty()) {
         //     return response()->json(['success' => 'false','message' => 'No processes found for the selected order.'], 404);
         // }
 
-        return response()->json( ['success' => true,'data' => ['processes' => $processes ]], 200);
-        
+        return response()->json(['success' => true, 'data' => ['processes' => $processes]], 200);
+    }
+
+
+    public function storeAssign(Request $request)
+    {
+
+        $validatedData = $request->validate([
+            'order_id' => 'required',
+            'process_id' => 'required',
+            'employee_id' => 'required',
+        ]);
+
+        $orderId = $validatedData['order_id'];
+        $processId = $validatedData['process_id'];
+        $employeeId = $validatedData['employee_id'];
+
+        $getOrderProcess = OrderProcess::where('order_id', $orderId)->where('process_id', $processId)->first();
+
+        if ($getOrderProcess) {
+            //assign to work for employee
+            $getOrderProcess->update(['employee_id' => $employeeId]);
+            return redirect()->route('admin.assign_list')->with('success', 'Order was assign successfully');
+        } else {
+            return redirect()->route('admin.assign_list')->with('error', 'Something worng order did not assigned');
+        }
+    }
+
+
+    public function editAssign($id)
+    {
+        $getAssign = OrderProcess::find($id);
+        return view('order.edit_assign');
     }
 }

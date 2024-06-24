@@ -32,4 +32,11 @@ class OrderProcess extends Model
     {
         return $this->belongsTo(User::class,'employee_id');
     }
+
+
+    protected $dates = [
+        'start_time',
+        'end_time',
+       
+    ];
 }

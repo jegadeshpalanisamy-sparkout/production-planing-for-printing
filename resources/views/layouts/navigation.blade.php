@@ -13,8 +13,14 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('Dashboard') }}
+                        {{ __('Home') }}
                     </x-nav-link>
+                    @if (Auth::user()=='employee')
+                        <x-nav-link :href="route('employees.notification')" :active="request()->routeIs('employees.notification')">
+                            {{ __('Notifications') }}
+                        </x-nav-link>
+                    @endif
+                   
                 </div>
             </div>
 

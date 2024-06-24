@@ -14,20 +14,23 @@
 
 <body>
     <div class="container-scroller">
-       
+        
+
         <!-- partial:partials/_sidebar.html -->
         @include('admin.sidebar')
        
         <!-- partial -->
         <div class="container-fluid page-body-wrapper">
           @include('admin.body')
+
+         
         </div>
 
     </div>
     <!-- container-scroller -->
     @include('admin.script')
     <!-- plugins:js -->
-
+    
     <!-- End custom js for this page -->
 </body>
 

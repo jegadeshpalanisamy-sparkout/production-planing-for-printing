@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminProcessMiddleware
+class EmployeeMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,11 @@ class AdminProcessMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::user()->role=='admin')
+        if(Auth::user()->role=='employee')
         {
             return $next($request);
         }
         abort(401);
+       
     }
 }
