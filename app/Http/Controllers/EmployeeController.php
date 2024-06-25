@@ -22,7 +22,7 @@ class EmployeeController extends Controller
         try {
             $employeeWorks = OrderProcess::with('employee', 'order')->where('employee_id', Auth::id())->get();
             // dd($employeeWorks);
-            return view('employee.work_list', compact('employeeWorks','getAllProcess'));
+            return view('employee.work_list', compact('employeeWorks'));
         } catch (\Exception $e) {
             Log::error('Error fetching employee work list: ' . __METHOD__ . ' - ' . $e->getMessage());
             return redirect()->back();
