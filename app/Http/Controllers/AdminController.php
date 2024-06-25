@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddEmployeeRequest;
 use App\Http\Requests\StoreProcessRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Order;
 use App\Models\OrderProcess;
 use App\Models\Process;
@@ -27,9 +28,15 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $processes = Process::all();
+        try {
+            $processes = Process::all();
 
-        return view('admin.home')->with('processes', $processes);
+            return view('admin.home')->with('processes', $processes);
+        } catch (\Exception $e) {
+            Log::error('Error fetching processes: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Failed to fetch processes. Please try again.');
+        }
     }
 
     /**
@@ -68,9 +75,14 @@ class AdminController extends Controller
      */
     public function editProcess($id)
     {
+        try {
+            $process = Process::find($id);
+            return view('admin.process.edit_process', compact('process'));
+        } catch (\Exception $e) {
+            Log::error('Error editing process: ' . __METHOD__ . $e->getMessage());
 
-        $process = Process::find($id);
-        return view('admin.process.edit_process', compact('process'));
+            return redirect()->back()->with('error', 'Process not found or error occurred.');
+        }
     }
     /**
      * Updates an existing process with the provided data.
@@ -101,12 +113,18 @@ class AdminController extends Controller
 
     public function deleteProcess($id)
     {
-        $getProcess = Process::find($id);
-        if ($getProcess) {
-            $getProcess->delete();
-            return redirect()->route('admin.body')->with('success', 'Process was deleted successfully');
-        } else {
-            return redirect()->route('admin.body')->with('error', 'Process not found');
+        try {
+            $getProcess = Process::find($id);
+            if ($getProcess) {
+                $getProcess->delete();
+                return redirect()->route('admin.body')->with('success', 'Process was deleted successfully');
+            } else {
+                return redirect()->route('admin.body')->with('error', 'Process not found');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error deleting process: ' .__METHOD__ .  $e->getMessage());
+
+            return redirect()->back()->with('error', 'Failed to delete process');
         }
     }
 
@@ -121,7 +139,7 @@ class AdminController extends Controller
      */
     public function showEmployees()
     {
-        $employees = User::where('role', 'employee')->get();
+        $employees = User::where('role', 'employee')->paginate(5);
         // dd($employees);
         return view('admin.employees.employee_list', compact('employees'));
     }
@@ -136,45 +154,28 @@ class AdminController extends Controller
      */
     public function editEmployee($id)
     {
-
-        $getEmployee = User::find($id);
-        // dd($getEmployee);
-        return view('admin.employees.edit_employee', compact('getEmployee'));
+        try {
+            $getEmployee = User::find($id);
+            // dd($getEmployee);
+            return view('admin.employees.edit_employee', compact('getEmployee'));
+        } catch (\Exception $e) {
+            Log::error('Error editing employee: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to edit employee');
+        }
     }
 
-
-    public function updateEmployee(Request $request, $id)
+    /**
+     * Update the specified employee in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateEmployee(UpdateEmployeeRequest $request, $id)
     {
         try {
             $employee = User::find($id);
-            $validateData = $request->validate([
-                'emp_name' => 'required|string|max:50',
-                'phone' => 'required|numeric|digits:10',
-                'email' => [
-                    'required',
-                    'email',
-                    Rule::unique('users')->ignore($employee->id),
-                ],
-                'password' => 'nullable|string|min:8', // Password is optional because admin cannot see user password.but allows to change password or existing password store default
-            ], [
-                'emp_name.required' => 'The employee name is required.',
-                'emp_name.string' => 'The employee name must be a string.',
-                'emp_name.max' => 'The employee name may not be greater than 50 characters.',
-
-                'phone.required' => 'The phone number is required.',
-                'phone.string' => 'The phone number must be a string.',
-                'phone.max' => 'The phone number may not be greater than 10 digits.',
-
-                'email.required' => 'The email address is required.',
-                'email.email' => 'The email address must be a valid email format.',
-                'email.unique' => 'The email address has already been taken.',
-
-                'password.string' => 'The password must be a string.',
-                'password.min' => 'The password must be at least 8 characters.',
-            ]);
-
-
-
+            $validateData = $request->validated();
             // Always include password field in validated data, even if it's null
             if (!empty($validateData['password'])) {
                 $validateData['password'] = Hash::make($validateData['password']);
@@ -189,24 +190,48 @@ class AdminController extends Controller
             return redirect()->route('admin.show_employees')->with('error', 'An error occurred while updating the employee. Please try again.');
         }
     }
+    /**
+     * Remove the specified employee from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
 
     public function deleteEmployee($id)
     {
-        $getEmployee = User::find($id);
+        try {
 
-        if ($getEmployee) {
-            $getEmployee->delete();
-            return redirect()->route('admin.show_employees')->with('success', 'Employee was deleted successfully');
-        } else {
-            return redirect()->route('admin.show_employees')->with('error', 'Employee not found');
+
+            $getEmployee = User::find($id);
+
+            if ($getEmployee) {
+                $getEmployee->delete();
+                return redirect()->route('admin.show_employees')->with('success', 'Employee was deleted successfully');
+            } else {
+                return redirect()->route('admin.show_employees')->with('error', 'Employee not found');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error deleting employee: ' . __METHOD__ . $e->getMessage());
+            return redirect()->route('admin.show_employees')->with('error', 'Failed to delete employee');
         }
     }
+
+    /**
+     * Show the form for creating a new employee.
+     *
+     * @return \Illuminate\View\View
+     */
 
     public function addEmployee()
     {
         return view('admin.employees.add_employee');
     }
-
+    /**
+     * Store a newly created employee in storage.
+     *
+     * @param  \App\Http\Requests\AddEmployeeRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function storeEmployee(AddEmployeeRequest $request)
     {
         try {
@@ -221,64 +246,80 @@ class AdminController extends Controller
         }
     }
 
-    //list of assign order
+    /**
+     * Display a listing of orders assigned to employees.
+     *
+     * @return \Illuminate\View\View
+     */
     public function assignList()
     {
-        $getAssignOrders = OrderProcess::whereNotNull('employee_id')->get();
-        return view('admin.order.assign_order_list', compact('getAssignOrders'));
+        try {
+            $getAssignOrders = OrderProcess::whereNotNull('employee_id')->paginate(5);
+            return view('admin.order.assign_order_list', compact('getAssignOrders'));
+        } catch (\Exception $e) {
+            Log::error('Error fetching assigned orders: ' . __METHOD__ . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to fetch assigned orders');
+        }
     }
-    //form for assign order
+    /**
+     * Display the form to assign orders to employees.
+     *
+     * @return \Illuminate\View\View
+     */
     public function assignOrder()
     {
+        try {
+            $getOrderProcesses = Order::with('processes')->get();
 
-        $getOrderProcesses = Order::with('processes')->get();
-
-        // dd( $getOrderProcesses);
-        $employees = User::where('role', 'employee')->get();
-        return view('admin.order.assign', compact('getOrderProcesses', 'employees'));
+            // dd( $getOrderProcesses);
+            $employees = User::where('role', 'employee')->get();
+            return view('admin.order.assign', compact('getOrderProcesses', 'employees'));
+        } catch (\Exception $e) {
+            Log::error('Error fetching order processes or employees: ' . __METHOD__ . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to fetch data for assignment');
+        }
     }
+
     //ajax request function
     public function getProcessesByOrderId($id)
     {
         $processes = OrderProcess::with('process')->where('order_id', $id)->where('start_time', null)->limit(1)->get();
 
-        // Check if processes are found
-        // if ($processes->isEmpty()) {
-        //     return response()->json(['success' => 'false','message' => 'No processes found for the selected order.'], 404);
-        // }
-
         return response()->json(['success' => true, 'data' => ['processes' => $processes]], 200);
     }
 
-
+    /**
+     * Assign an order process to an employee.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function storeAssign(Request $request)
     {
+        try {
+            $validatedData = $request->validate([
+                'order_id' => 'required',
+                'process_id' => 'required',
+                'employee_id' => 'required',
+            ]);
 
-        $validatedData = $request->validate([
-            'order_id' => 'required',
-            'process_id' => 'required',
-            'employee_id' => 'required',
-        ]);
+            $orderId = $validatedData['order_id'];
+            $processId = $validatedData['process_id'];
+            $employeeId = $validatedData['employee_id'];
 
-        $orderId = $validatedData['order_id'];
-        $processId = $validatedData['process_id'];
-        $employeeId = $validatedData['employee_id'];
+            $getOrderProcess = OrderProcess::where('order_id', $orderId)->where('process_id', $processId)->first();
 
-        $getOrderProcess = OrderProcess::where('order_id', $orderId)->where('process_id', $processId)->first();
+            if ($getOrderProcess) {
+                //assign to work for employee
+                $getOrderProcess->update(['employee_id' => $employeeId]);
+                return redirect()->route('admin.assign_list')->with('success', 'Order was assign successfully');
+            } else {
+                return redirect()->route('admin.assign_list')->with('error', 'Something worng order did not assigned');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error assigning order: ' . __METHOD__ . $e->getMessage());
 
-        if ($getOrderProcess) {
-            //assign to work for employee
-            $getOrderProcess->update(['employee_id' => $employeeId]);
-            return redirect()->route('admin.assign_list')->with('success', 'Order was assign successfully');
-        } else {
-            return redirect()->route('admin.assign_list')->with('error', 'Something worng order did not assigned');
+            return redirect()->route('admin.assign_list')->with('error', 'Failed to assign order');
         }
-    }
-
-
-    public function editAssign($id)
-    {
-        $getAssign = OrderProcess::find($id);
-        return view('order.edit_assign');
     }
 }

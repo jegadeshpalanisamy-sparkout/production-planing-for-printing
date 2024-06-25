@@ -13,8 +13,8 @@
                             <div class="mb-4">
                                 <label for="customer_name" class="block text-gray-700 text-sm font-bold mb-2">Customer
                                     Name</label>
-                                <input type="text" id="customer_name" name="customer_name"
-                                    placeholder="Enter customer name"
+                                <input type="text" id="customer_name" name="customer_name" 
+                                    placeholder="Enter customer name" value="{{ old('customer_name') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('customer_name')
@@ -25,7 +25,7 @@
                             <div class="mb-4">
                                 <label for="customer_phone" class="block text-gray-700 text-sm font-bold mb-2">Customer
                                     Phone</label>
-                                <input type="text" id="customer_phone" name="customer_phone"
+                                <input type="text" id="customer_phone" name="customer_phone" value="{{ old('customer_phone') }}"
                                     placeholder="Enter customer phone"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
@@ -37,7 +37,7 @@
                             <div class="mb-4">
                                 <label for="customer_address"
                                     class="block text-gray-700 text-sm font-bold mb-2">Customer Address</label>
-                                <input type="text" id="customer_address" name="customer_address"
+                                <input type="text" id="customer_address" name="customer_address" value="{{ old('customer_address') }}"
                                     placeholder="Enter customer address"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
@@ -49,7 +49,7 @@
                             <div class="mb-4">
                                 <label for="ordered_date" class="block text-gray-700 text-sm font-bold mb-2">Ordered
                                     Date</label>
-                                <input type="date" id="ordered_date" name="ordered_date"
+                                <input type="date" id="ordered_date" name="ordered_date" value="{{ old('ordered_date') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('ordered_date')
@@ -60,7 +60,7 @@
                             <div class="mb-4">
                                 <label for="estimate_delivery_date"
                                     class="block text-gray-700 text-sm font-bold mb-2">Estimate Delivery Date</label>
-                                <input type="date" id="estimate_delivery_date" name="estimate_delivery_date"
+                                <input type="date" id="estimate_delivery_date" name="estimate_delivery_date" value="{{ old('estimate_delivery_date') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('estimate_delivery_date')
@@ -74,7 +74,7 @@
                                     <div class="mb-2">
                                         <input type="checkbox" name="process_steps[]"
                                             id="process_step_{{ $process->id }}" class="addcheck"
-                                            value="{{ $process->id }}"
+                                            value="{{ $process->id }}" {{ in_array($process->id, old('process_steps', [])) ? 'checked' : '' }}
                                             class="shadow border rounded py-2 px-3 text-gray-700 leading-tight">
                                         <label for="process_step_{{ $process->id }}"
                                             class="ml-2">{{ $process->name }}</label>
@@ -115,8 +115,8 @@
                 // Loop through all checked checkboxes
                 $('.addcheck:checked').each(function() {
                     temp.push($(this).val());
-                    if (!selectedProcessSteps.includes($(this).val())) {
-                        selectedProcessSteps.push($(this).val());
+                    if (!selectedProcessSteps.includes($(this).val())) { // check this value have in selectedProcessSteps if not there it will be added
+                        selectedProcessSteps.push($(this).val());       
                     }
                 });
 

@@ -66,10 +66,14 @@
                                         Assign
                                     </button>
                                 </div>
-                                <a href="{{ route('employees.index') }}"
-                                    class="bg-violet-500 hover:bg-violet-600 text-white font-bold py-2 px-4 rounded">
-                                    Back
-                                </a>
+                               
+                                <div>
+                                    <button type="button" onclick="window.history.back()"
+                                class="bg-violet-500 hover:bg-violet-600 text-white font-bold p-2 rounded">
+                                Back
+                            </button>
+                                </div>
+                                
                             </div>
                         </form>
                     </div>

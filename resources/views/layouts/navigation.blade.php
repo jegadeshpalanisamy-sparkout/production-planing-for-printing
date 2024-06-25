@@ -15,7 +15,7 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
-                    @if (Auth::user()=='employee')
+                    @if (Auth::user()->role=='employee')
                         <x-nav-link :href="route('employees.notification')" :active="request()->routeIs('employees.notification')">
                             {{ __('Notifications') }}
                         </x-nav-link>

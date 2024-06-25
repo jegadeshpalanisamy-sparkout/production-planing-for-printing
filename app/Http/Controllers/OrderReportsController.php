@@ -8,10 +8,16 @@ use App\Models\Order;
 use App\Models\OrderProcess;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderReportsController extends Controller
 {
-    //
+    /**
+     * Display a filtered list of orders based on their status.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $filter = $request->input('filter', 'all');
@@ -28,41 +34,39 @@ class OrderReportsController extends Controller
                 break;
         }
 
-        return view('admin.reports.order_reports', compact('orders'));
-        // $orders = Order::with('processes')
-        // ->whereHas('processes', function ($query) {
-        //     $query->whereNotNull('end_time');
-        // })
-        // ->get()
-        // ->filter(function ($order) {
-        //     // Check if all processes have end_time
-        //     $allProcessesEnded = $order->processes->every(function ($process) {
-        //         return $process->end_time !== null;
-        //     });
-
-        //     if (!$allProcessesEnded) {
-        //         return false; // Skip orders where not all processes have end_time
-        //     }
-
-        //     // Check if the last process end_time is less than estimate_delivery_date
-        //     $lastProcess = $order->processes->last();
-        //     return $lastProcess->end_time < new Carbon($order->estimate_delivery_date);
-        // });
+        return view('admin.reports.order_reports', compact('orders'));      
 
 
         //  dd($orders);
         return view('admin.reports.order_reports', compact('orders'));
     }
 
+    /**
+     * Display a list of orders that do not have associated billing records.billing form
+     *
+     * @return \Illuminate\View\View
+     */
     public function billings()
     {
-        $getOrders = Order::whereDoesntHave('billing')
-            ->get();
+        try {
+            $getOrders = Order::whereDoesntHave('billing')
+                ->get();
 
 
-        return view('admin.billings.bill', compact('getOrders'));
+            return view('admin.billings.bill', compact('getOrders'));
+        } catch (\Exception $e) {
+
+            Log::error('Error fetching orders without billing records: ' . __METHOD__ . ' - ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Failed to fetch orders without billing records. Please try again.');
+        }
     }
-
+    /**
+     * Store the billing information for an order.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function storeBill(Request $request)
     {
         // dd($request->all()); // Debugging statement to check request data
@@ -84,7 +88,11 @@ class OrderReportsController extends Controller
             return back()->with('error', 'Failed to store billing information. ' . $e->getMessage())->withInput();
         }
     }
-
+    /**
+     * Display a list of all billing records with pagination.
+     *
+     * @return \Illuminate\View\View
+     */
     public function listBill()
     {
         $getAllBills = Billing::with('order')->paginate(5);
@@ -92,6 +100,12 @@ class OrderReportsController extends Controller
         return view('admin.billings.index', compact('getAllBills'));
     }
 
+    /**
+     * Display the form for editing a billing record.
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function editBill($id)
     {
         try {
@@ -102,7 +116,13 @@ class OrderReportsController extends Controller
             return redirect()->route('admin.bill_index')->with('error', 'Billing record not found.');
         }
     }
-
+    /**
+     * Update the billing record.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updateBill(Request $request, $id)
     {
         $request->validate([
@@ -121,18 +141,21 @@ class OrderReportsController extends Controller
             return redirect()->route('admin.bill_index')->with('error', 'Failed to update billing record.');
         }
     }
+
+    /**
+     * Delete the billing record.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteBill($id)
     {
-        try{
-            $getBill=Billing::find($id);
+        try {
+            $getBill = Billing::find($id);
             $getBill->delete();
-            return redirect()->route('admin.bill_index')->with('success','Billing record was deleted successfully.');
+            return redirect()->route('admin.bill_index')->with('success', 'Billing record was deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.bill_index')->with('error', 'Billing record was deleted successfully.');
         }
-        catch(\Exception $e)
-        {
-            return redirect()->route('admin.bill_index')->with('error','Billing record was deleted successfully.');
-
-        }
-
     }
 }

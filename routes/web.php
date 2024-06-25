@@ -44,7 +44,7 @@ Route::middleware('process')->group(function(){
             //add process by admin
         Route::get('/add-process',[AdminController::class,'addProcess'])->name('admin.process');
         //store process by admin
-        Route::post('/store-process',[AdminController::class,'storeProcess'])->name('admin.store_process');
+        Route::post('/store-process-admin',[AdminController::class,'storeProcess']);
         //view admin body contents
         Route::get('/body',[AdminController::class,'index'])->name('admin.body');
         //edit process by admin

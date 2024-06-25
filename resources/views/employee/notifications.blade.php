@@ -67,15 +67,15 @@
     </head>
 
     <body>
-        <div class="container-scroller flex flex-col md:flex-row">
+        <div class="container-scroller flex flex-col md:flex-row ">
             <!-- Sidebar -->
             <x-sidebar />
 
             <!-- Main Content -->
-            <div class="flex-1 p-6 bg-gray-100">
-                <div class="container mx-auto">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        {{ __('User page') }}
+            <div class="flex-1 p-6 bg-gray-100 pt-12">
+                <div class="container mx-auto pt-12">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tightpt-12">
+                        {{ __('All Notifications') }}
                     </h2>
                     <div class="py-12">
                         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

@@ -10,13 +10,13 @@
                     <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-6 text-gray-800">Add Process</h2>
 
-                        <form action="{{ route('admin.store_process') }}" method="post">
+                        <form action="{{ url('store-process-admin') }}" method="post">
                             @csrf
                             <!-- Process Name -->
                             <div class="mb-4">
                                 <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Process
                                     Name</label>
-                                <input type="text" id="name" name="name" placeholder="Enter process name"
+                                <input type="text" id="name" name="name" placeholder="Enter process name" value="{{ old('name') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight">
                             </div>
 

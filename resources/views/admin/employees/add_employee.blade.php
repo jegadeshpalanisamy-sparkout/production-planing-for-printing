@@ -13,7 +13,7 @@
                             <!-- Employee Name -->
                             <div class="mb-4">
                                 <label for="emp_name" class="block text-gray-700 text-sm font-bold mb-2">Employee Name</label>
-                                <input type="text" id="emp_name" name="emp_name" placeholder="Enter employee name" 
+                                <input type="text" id="emp_name" name="emp_name" placeholder="Enter employee name" value="{{ old('emp_name') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight  focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                             </div>
                             @error('emp_name')
@@ -23,7 +23,7 @@
                             <!-- Phone -->
                             <div class="mb-4">
                                 <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                                <input type="number" id="phone" name="phone" placeholder="Enter phone number" 
+                                <input type="number" id="phone" name="phone" placeholder="Enter phone number" value="{{ old('phone') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('phone')
@@ -33,7 +33,7 @@
                             <!-- Email -->
                             <div class="mb-4">
                                 <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                                <input type="email" id="email" name="email" placeholder="Enter email"  
+                                <input type="email" id="email" name="email" placeholder="Enter email"  value="{{ old('email') }}"
                                     class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight" required>
                             </div>
                             @error('email')

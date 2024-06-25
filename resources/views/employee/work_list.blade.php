@@ -75,8 +75,11 @@
                                                     please start work
                                                     @elseif($work->end_time!=null && $work->start_time!=null)
                                                     <a href="{{ route('employees.switch_process',$work->order_id)}}" class="bg-violet-500 text-white px-3 py-2 rounded hover:bg-violet-600 text-decoration-none">
-                                                        Switch process                                                     
+                                                        Switch process
                                                     </a>
+                                                    @elseif($work->end_time==null && $work->start_time!=null)
+                                                     <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full border border-green-200">If you complete process click done</span>
+
                                                     @else
                                                      <span class="bg-green-100 text-green-800 font-semibold py-1 px-3 rounded-full border border-green-200">No more process</span>
 

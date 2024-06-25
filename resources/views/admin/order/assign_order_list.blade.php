@@ -70,6 +70,11 @@
 
 
                 </div>
+                <footer class="footer">
+                    <div class="mt-4 flex justify-center">
+                        {{ $getAssignOrders->links() }}
+                    </div>
+                </footer>
 
             </div>
 

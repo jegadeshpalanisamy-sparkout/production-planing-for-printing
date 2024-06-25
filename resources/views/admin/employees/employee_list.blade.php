@@ -70,7 +70,9 @@
     <!-- content-wrapper ends -->
     <!-- partial:partials/_footer.html -->
     <footer class="footer">
-
+        <div class="mt-4 flex justify-center">
+            {{ $employees->links() }}
+        </div>
     </footer>
     <!-- partial -->
 </div>

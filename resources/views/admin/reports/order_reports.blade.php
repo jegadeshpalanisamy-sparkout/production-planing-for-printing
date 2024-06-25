@@ -22,43 +22,20 @@
           
 
             </div>
-
-
         </div>
-
-
         <div class="overflow-x-auto bg-white rounded-lg shadow-md">
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-800 text-white">
                     <tr>
                         <th class="w-2/12 px-4 py-2">Order ID</th>
-
                         <th class="w-2/12 px-4 py-2">Order Number</th>
                         <th class="w-2/12 px-4 py-2">Customer Name</th>
                         <th class="w-2/12 px-4 py-2">Ordered Date</th>
                         <th class="w-3/12 px-4 py-2">Estimate Delivery Date</th>
                         <th class="w-3/12 px-4 py-2">Delivery Date</th>
-
-
-
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($orders as $orderProcesses)
-                    @foreach ($orderProcesses as $orderProcess)
-                        @if ($orderProcess->end_time)
-                        <tr class="border text-center">
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->order_id }}</td>
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->order->order_number }}</td>
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->order->customer_name }}</td>
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->order->ordered_date }}</td>
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->order->estimate_delivery_date }}</td>
-                            <td class="w-2/12 px-4 py-2">{{ $orderProcess->end_time }}</td>
-                        </tr>
-                        @endif
-                    @endforeach
-                @endforeach --}}
-
                     @foreach ($orders as $order)
                         <tr class="border text-center">
                             <td class="w-2/12 px-4 py-2">{{ $order->id }}</td>
@@ -70,10 +47,13 @@
                                 <td>
                                     @if ($order->processes->isNotEmpty())
                                         {{ \Carbon\Carbon::parse($order->processes->last()->end_time)->format('Y-m-d') }}
-                                    @else
-                                        {{ 'in progress' }}
+                                   
                                     @endif
                                 </td>
+                            @else
+                            <td>
+                               <p>still working</p>
+                            </td>
                             @endif
 
                         </tr>
