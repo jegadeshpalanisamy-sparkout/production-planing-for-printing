@@ -25,7 +25,7 @@ class EmployeeController extends Controller
             return view('employee.work_list', compact('employeeWorks','getAllProcess'));
         } catch (\Exception $e) {
             Log::error('Error fetching employee work list: ' . __METHOD__ . ' - ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to fetch employee work list. Please try again.');
+            return redirect()->back();
         }
     }
     /**

@@ -20,24 +20,46 @@ class OrderReportsController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = $request->input('filter', 'all');
+        // $filter = $request->input('filter', 'all');
 
+        // switch ($filter) {
+        //     case 'on_time':
+        //         $orders = Order::OnTime();
+        //         break;
+        //     case 'late':
+        //         $orders = Order::Late();
+        //         break;
+        //     default:
+        //         $orders = Order::with('processes')->get();
+        //         break;
+        // }
+
+        // return view('admin.reports.order_reports', compact('orders'));   
+        
+        
+
+        $filter = $request->input('filter', 'all');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        $query = Order::query();
+            
+        if ($startDate && $endDate) {
+            $query->whereBetween('ordered_date', [$startDate, $endDate]);
+        }
+    
         switch ($filter) {
             case 'on_time':
-                $orders = Order::OnTime();
+                $orders = $query->OnTime();
                 break;
             case 'late':
-                $orders = Order::Late();
+                $orders = $query->Late();
                 break;
             default:
-                $orders = Order::with('processes')->get();
+                $orders = $query->with('processes')->get();
                 break;
         }
-
-        return view('admin.reports.order_reports', compact('orders'));      
-
-
-        //  dd($orders);
+    
         return view('admin.reports.order_reports', compact('orders'));
     }
 

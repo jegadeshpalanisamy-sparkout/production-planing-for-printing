@@ -93,8 +93,7 @@ class OrdersController extends Controller
      */
     public function edit($id)
     {
-        //
-        // $order=Order::with('processes')->where('id',$id)->get();
+        
         $order = Order::with('processes')->findOrFail($id); // Fetch a single order by ID
 
         // dd($order);

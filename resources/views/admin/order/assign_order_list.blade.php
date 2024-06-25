@@ -79,8 +79,7 @@
             </div>
 
         </div>
-        <!-- main-panel ends -->
     </div>
-    <!-- page-body-wrapper ends -->
+
 
 </x-app-layout>
