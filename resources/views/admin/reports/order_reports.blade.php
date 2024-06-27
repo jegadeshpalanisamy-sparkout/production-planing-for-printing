@@ -23,13 +23,13 @@
             <form action="{{ route('admin.order_reports') }}" method="get" class="flex space-x-4">
                 <div>
                     <label for="start_date" class="block text-gray-700 text-sm font-bold  ">Start Date</label>
-                    <input type="date" id="start_date" name="start_date"
+                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date',request('start_date')) }}"
                         class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight">
                 </div>
 
                 <div>
                     <label for="end_date" class="block text-gray-700 text-sm font-bold ">End Date</label>
-                    <input type="date" id="end_date" name="end_date"
+                    <input type="date" id="end_date" name="end_date" value="{{ old('start_date',request('end_date')) }}"
                         class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight">
                 </div>
 

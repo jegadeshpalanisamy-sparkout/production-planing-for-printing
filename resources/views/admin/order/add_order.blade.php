@@ -116,7 +116,7 @@
                 $('.addcheck:checked').each(function() {
                     temp.push($(this).val());
                     if (!selectedProcessSteps.includes($(this).val())) { // check this value have in selectedProcessSteps if not there it will be added
-                        selectedProcessSteps.push($(this).val());       
+                        selectedProcessSteps.push($(this).val());
                     }
                 });
 

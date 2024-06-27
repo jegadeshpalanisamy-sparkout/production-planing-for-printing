@@ -52,6 +52,15 @@
             
         </a>
     </li>
+
+    <li class="nav-item menu-items">
+        <a class="nav-link bg-white-500 rounded-md hover:bg-blue-400 " href="{{ route('admin.employee_report') }}">
+            <button class="bg-white-500 text-black px-4  rounded-md w-100 ">
+                 Employee reports
+            </button>
+            
+        </a>
+    </li>
     </ul>
 </nav>
 

@@ -74,7 +74,7 @@ class EmployeeController extends Controller
 
                 return response()->json(['message' => 'Work completed successfully']);
             } else {
-                return response()->json(['message' => 'Order process not found']);
+                return response()->json(['error' => 'Order process not found']);
             }
         } catch (\Exception $e) {
 

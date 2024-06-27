@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeReportsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderReportsController;
 use App\Http\Controllers\OrdersController;
@@ -110,6 +111,15 @@ Route::middleware('process')->group(function(){
         //delete bill
         Route::delete('/delete-bill/{id}',[OrderReportsController::class,'deleteBill'])->name('admin.delete_bill');
 
+        //employee reports page
+        Route::get('/employee-report',[EmployeeReportsController::class,'index'])->name('admin.employee_report');
+        //ajax request get employe order&process details
+        Route::get('emp-search',[EmployeeReportsController::class,'getOrderProcessByEmpId'])->name('admin.emp_search');
+
+        Route::get('emp-search',[EmployeeReportsController::class,'getEmpOrder'])->name('admin.emp_order_search');
+
+
+
 
 });
 
@@ -131,4 +141,5 @@ Route::get('/switch-process/{id}',[EmployeeController::class,'switchProcess'])->
 
 //store switch process by employee
 Route::post('/store-process',[EmployeeController::class,'storeSwitchProcess'])->name('employees.assign_order');
+
 });

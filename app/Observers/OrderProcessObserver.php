@@ -28,9 +28,7 @@ class OrderProcessObserver
      */
     public function updated(OrderProcess $orderProcess)
     {
-        //
-        // $getEmployee=$orderProcess->employee_id;
-        // dd($getEmployee);
+        
 
         if($orderProcess->isDirty('employee_id'))
         {
